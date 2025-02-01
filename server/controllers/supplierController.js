@@ -31,3 +31,28 @@ exports.getAllSuppliers = async (req, res) => {
     });
   }
 };
+
+exports.updateSupplierOpeningBalance = async (req, res) => {
+  try {
+    const { supplierId } = req.params;
+    const { opening_balance } = req.body;
+
+    const updatedSupplier = await Supplier.findByIdAndUpdate(
+      supplierId,
+      { opening_balance: opening_balance },
+      { new: true } // This option returns the updated document
+    );
+
+    if (!updatedSupplier) {
+      return res.status(404).json({ success: false, message: "Supplier not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Supplier opening balance updated successfully",
+      updatedSupplier,
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};

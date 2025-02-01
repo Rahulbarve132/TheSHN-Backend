@@ -61,3 +61,24 @@ exports.verifyInventoryItem = async (req, res) => {
     res.status(400).json({ success: false, error: error.message });
   }
 };
+
+// Delete Inventory Item by ID
+exports.deleteInventoryItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedItem = await Inventory.findByIdAndDelete(id);
+
+    if (!deletedItem) {
+      return res.status(404).json({ success: false, message: "Inventory item not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Inventory item deleted successfully",
+      deletedItem,
+    });
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
