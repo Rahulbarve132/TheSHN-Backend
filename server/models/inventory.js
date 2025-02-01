@@ -75,9 +75,10 @@ const InventorySchema = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
-    status: {
-      type: Boolean,
-      default: false,
+    verified_item: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
   },
   {

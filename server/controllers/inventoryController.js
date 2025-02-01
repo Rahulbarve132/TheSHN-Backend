@@ -41,22 +41,33 @@ exports.getUnverifiedInventory = async (req, res) => {
   }
 };
 
-// Verify Inventory Item
-exports.verifyInventoryItem = async (req, res) => {
-  try {
-    const updatedItem = await Inventory.findOneAndUpdate(
-      { serial_no: req.params.serialNumber },
-      { status: true },
-      { new: true } // This option returns the updated document
-    );
 
-    if (!updatedItem) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Inventory item not found" });
+// Edit Verified Item Counter
+exports.editVerifiedItemCounter = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { verified_item } = req.body;
+
+    const item = await Inventory.findById(id);
+
+    if (!item) {
+      return res.status(404).json({ success: false, message: "Inventory item not found" });
     }
 
-    res.status(200).json({ success: true, message: "Inventory item verified", updatedItem });
+    const newVerifiedItemCount = item.verified_item + verified_item;
+
+    if (newVerifiedItemCount > item.quantity) {
+      return res.status(400).json({ success: false, message: "Verified item count cannot exceed quantity" });
+    }
+
+    item.verified_item = newVerifiedItemCount;
+    const updatedItem = await item.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Verified item counter updated successfully",
+      updatedItem,
+    });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }
